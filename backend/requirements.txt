@@ -1,0 +1,24 @@
+# Orchaid — Backend Python Dependencies
+# FastAPI + server
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+python-dotenv==1.0.1
+httpx==0.27.0
+pydantic==2.7.1
+
+# NVIDIA NIM (OpenAI-compatible SDK)
+openai==1.30.1
+
+# Google Cloud
+google-cloud-bigquery==3.21.0
+google-cloud-documentai==2.24.0
+google-cloud-storage==2.16.0
+google-cloud-aiplatform==1.52.0
+vertexai==1.71.1
+
+# LangGraph orchestration
+langgraph==0.1.1
+langchain-core==0.2.1
+
+# Data
+pandas==2.2.2

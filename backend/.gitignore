@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+gcp-service-account.json
+venv/
+.venv/
+*.egg-info/
+dist/
+.DS_Store

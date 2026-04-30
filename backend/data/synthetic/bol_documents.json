@@ -1,0 +1,98 @@
+[
+  {
+    "bol_id": "BOL-74808",
+    "doc_type": "BOL",
+    "vendor": "Fresh Express",
+    "shipment_date": "2026-04-28",
+    "received_date": "2026-04-28",
+    "product_category": "produce",
+    "product_name": "Romaine Lettuce (bagged, various sizes)",
+    "invoiced_qty": 340,
+    "received_qty": 340,
+    "qty_delta": 0,
+    "qty_delta_value": 0.0,
+    "lot_number": "RLT-2024-0891",
+    "po_lot_number": "RLT-2024-0891",
+    "lot_mismatch": false,
+    "temp_log_present": true,
+    "cold_chain_req": true,
+    "status": "QUARANTINED",
+    "flags": [
+      "recall_match"
+    ],
+    "recall_match": true,
+    "recall_number": "F-2024-0033"
+  },
+  {
+    "bol_id": "BOL-74821",
+    "doc_type": "BOL",
+    "vendor": "Del Monte",
+    "shipment_date": "2026-04-28",
+    "received_date": "2026-04-28",
+    "product_category": "produce",
+    "product_name": "Roma Tomatoes (cases)",
+    "invoiced_qty": 480,
+    "received_qty": 462,
+    "qty_delta": -18,
+    "qty_delta_value": -340.0,
+    "lot_number": "DMT-2024-1102",
+    "po_lot_number": "DMT-2024-1102",
+    "lot_mismatch": false,
+    "temp_log_present": true,
+    "cold_chain_req": false,
+    "status": "DISPUTED",
+    "flags": [
+      "qty_discrepancy"
+    ],
+    "recall_match": false,
+    "recall_number": null
+  },
+  {
+    "bol_id": "BOL-74839",
+    "doc_type": "BOL",
+    "vendor": "Tyson Foods",
+    "shipment_date": "2026-04-29",
+    "received_date": "2026-04-29",
+    "product_category": "meat_seafood",
+    "product_name": "Chicken Breast (bulk, 3lb packs)",
+    "invoiced_qty": 220,
+    "received_qty": 220,
+    "qty_delta": 0,
+    "qty_delta_value": 0.0,
+    "lot_number": "TYS-2024-0891",
+    "po_lot_number": "TYS-2024-0891",
+    "lot_mismatch": false,
+    "temp_log_present": false,
+    "cold_chain_req": true,
+    "status": "FLAGGED",
+    "flags": [
+      "missing_temp_log"
+    ],
+    "recall_match": false,
+    "recall_number": null
+  },
+  {
+    "bol_id": "BOL-74851",
+    "doc_type": "BOL",
+    "vendor": "Dole",
+    "shipment_date": "2026-04-30",
+    "received_date": "2026-04-30",
+    "product_category": "produce",
+    "product_name": "Bananas (cases)",
+    "invoiced_qty": 180,
+    "received_qty": 180,
+    "qty_delta": 0,
+    "qty_delta_value": 0.0,
+    "lot_number": "DL-0442",
+    "po_lot_number": "DL-0441",
+    "lot_mismatch": true,
+    "temp_log_present": false,
+    "cold_chain_req": false,
+    "status": "FLAGGED",
+    "flags": [
+      "lot_mismatch"
+    ],
+    "recall_match": false,
+    "recall_number": null
+  }
+]
