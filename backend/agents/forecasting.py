@@ -2,25 +2,25 @@ from typing import Optional
 # backend/agents/forecasting.py
 # Forecasting Agent — Demand & Spoilage Intelligence
 #
-# Model: nvidia/llama-3.1-nemotron-70b-instruct via NIM
+# Model: nvidia/nemotron-3-super-120b-a12b via NIM
 # Temperature: 0.1 (low — deterministic forecasts)
 # Physical AI Loop: Loop 3 → POS Markdown trigger
 #
-# Why Nemotron 70B:
+# Why Nemotron 3 Super 120B:
 #   Demand forecasting requires multi-step numerical reasoning across
 #   velocity trends, dwell times, and external demand signals simultaneously.
-#   Nemotron's RLHF post-training on Llama 70B significantly outperforms
+#   Nemotron's RLHF post-training on Llama significantly outperforms
 #   the base model on structured reasoning tasks. Low temp = reproducible
 #   markdown recommendations across runs.
 
-from lib.nim import NEMOTRON_70B
+from lib.nim import NEMOTRON_LARGE
 
 
 FORECASTING_AGENT = {
     "id": "forecasting",
     "name": "Forecasting Agent",
     "role": "Demand & Spoilage Intelligence",
-    "model": NEMOTRON_70B,
+    "model": NEMOTRON_LARGE,
     "temperature": 0.1,
 }
 
@@ -59,7 +59,7 @@ and spoilage intelligence agent for the Stater Bros. Distribution Center,
 San Bernardino, CA. You are part of the NVIDIA MAIW (Multi-Agent Intelligent
 Warehouse) Blueprint implementation.
 
-You run on nvidia/llama-3.1-nemotron-70b-instruct via NVIDIA NIM microservices.
+You run on nvidia/nemotron-3-super-120b-a12b via NVIDIA NIM microservices.
 Your reasoning is grounded in real-time BigQuery telemetry and cuML-style
 spoilage risk scoring.
 

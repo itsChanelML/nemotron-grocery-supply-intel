@@ -474,7 +474,7 @@ export default function CommandCenter() {
                 </div>
                 <div style={{ fontSize:8, color:"rgba(255,255,255,0.3)", marginTop:2 }}>
                   {agent
-                    ? `NIM: ${agent.id === "safety" ? "meta/llama-3.1-8b-instruct" : "nvidia/llama-3.1-nemotron-70b-instruct"}`
+                    ? `NIM: ${agent.id === "safety" ? "nvidia/nemotron-3.5-lightning-30b-a3b" : "nvidia/nemotron-3-super-120b-a12b"}`
                     : "Gemini 2.5 Pro · Vertex AI · Coordinating 4 NIM agents"}
                 </div>
               </div>
@@ -561,7 +561,7 @@ export default function CommandCenter() {
         <div style={{ height:26, flexShrink:0, borderTop:"1px solid rgba(255,255,255,0.05)",
           background:"rgba(0,0,0,0.3)", display:"flex", alignItems:"center", padding:"0 18px", gap:18 }}>
           {[
-            ["NVIDIA NIM","nemotron-70b-instruct · llama-3.1-8b-instruct · nv-embedqa-e5-v5"],
+            ["NVIDIA NIM","nemotron-3-super-120b · nemotron-3.5-lightning-30b · nemotron-3-embed-1b"],
             ["ORCHESTRATOR","Gemini 2.5 Pro · Vertex AI"],
             ["GCP","BigQuery · Document AI · Cloud Storage · Vertex AI"],
             ["COMPLIANCE","FDA OpenFDA API · Live recall cross-reference"],

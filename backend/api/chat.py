@@ -4,10 +4,10 @@ from typing import Optional
 #
 # Routing:
 #   orchestrator → Gemini 2.5 Pro via Vertex AI
-#   forecasting  → Nemotron 70B via NIM  (temp 0.1)
-#   equipment    → Nemotron 70B via NIM  (temp 0.1)
-#   safety       → Llama 8B via NIM      (temp 0.0)
-#   document     → Nemotron 70B via NIM  (temp 0.1)
+#   forecasting  → Nemotron 3 Super 120B via NIM  (temp 0.1)
+#   equipment    → Nemotron 3 Super 120B via NIM  (temp 0.1)
+#   safety       → Nemotron 3.5 Lightning 30B via NIM      (temp 0.0)
+#   document     → Nemotron 3 Super 120B via NIM  (temp 0.1)
 #
 # After agent responds:
 #   Scans response for Physical AI trigger keywords
@@ -39,10 +39,10 @@ NVIDIA MAIW (Multi-Agent Intelligent Warehouse) Blueprint.
 You are powered by Gemini 2.5 Pro via Google Cloud Vertex AI. You coordinate
 4 specialized NIM-powered agents running on NVIDIA infrastructure:
 
-1. Forecasting Agent (Nemotron 70B via NIM) — demand, spoilage risk, markdowns
-2. Equipment Agent (Nemotron 70B via NIM) — cold chain, AMR fleet, conveyors
-3. Safety Agent (Llama 8B via NIM) — FDA FSMA, OSHA, live recall cross-reference
-4. Document Agent (Nemotron 70B + NV-EmbedQA RAG) — BOLs, invoices, lot matching
+1. Forecasting Agent (Nemotron 3 Super 120B via NIM) — demand, spoilage risk, markdowns
+2. Equipment Agent (Nemotron 3 Super 120B via NIM) — cold chain, AMR fleet, conveyors
+3. Safety Agent (Nemotron 3.5 Lightning 30B via NIM) — FDA FSMA, OSHA, live recall cross-reference
+4. Document Agent (Nemotron 3 Super 120B + NV-EmbedQA RAG) — BOLs, invoices, lot matching
 
 Current system status:
 - 🔴 CRITICAL: FDA Class II recall — romaine lettuce lot #RLT-2024-0891, 340 units in dock
@@ -91,9 +91,9 @@ async def chat(body: ChatRequest, request: Request):
                 messages=messages,
             )
         elif HAS_NIM_KEY:
-            # No GCP configured: Nemotron 70B stands in as orchestrator
+            # No GCP configured: Nemotron 3 Super 120B stands in as orchestrator
             response_text = await nim_chat(
-                model="nvidia/llama-3.1-nemotron-70b-instruct",
+                model="nvidia/nemotron-3-super-120b-a12b",
                 system_prompt=ORCHESTRATOR_SYSTEM,
                 messages=messages,
                 temperature=0.2,

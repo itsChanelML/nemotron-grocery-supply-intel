@@ -2,27 +2,27 @@ from typing import Optional
 # backend/agents/safety.py
 # Safety Agent — FDA & OSHA Compliance
 #
-# Model: meta/llama-3.1-8b-instruct via NIM
+# Model: nvidia/nemotron-3.5-lightning-30b-a3b via NIM
 # Temperature: 0.0 (zero — compliance answers must be deterministic)
 # Physical AI Loop: Loop 2 → WMS Quarantine trigger
 #
-# Why Llama 8B (not Nemotron 70B):
+# Why Nemotron 3.5 Lightning 30B (not Nemotron 3 Super 120B):
 #   FDA/OSHA compliance is primarily rule lookup + threshold comparison
 #   against known regulations. "Did zone D-3 exceed 41°F?" and "Does this
 #   match 21 CFR 117.93?" are pattern matching tasks, not complex causal
-#   reasoning. The 8B model handles this reliably at 4x lower latency and
-#   cost. We reserve Nemotron 70B for agents requiring deep multi-variable
+#   reasoning. The 30B fast model handles this reliably at 4x lower latency and
+#   cost. We reserve Nemotron 3 Super 120B for agents requiring deep multi-variable
 #   reasoning. Zero temp = zero ambiguity on safety decisions.
-#   Note: escalates to Nemotron 70B for novel cross-regulation scenarios.
+#   Note: escalates to Nemotron 3 Super 120B for novel cross-regulation scenarios.
 
-from lib.nim import LLAMA_8B
+from lib.nim import NEMOTRON_FAST
 
 
 SAFETY_AGENT = {
     "id": "safety",
     "name": "Safety Agent",
     "role": "FDA & OSHA Compliance",
-    "model": LLAMA_8B,
+    "model": NEMOTRON_FAST,
     "temperature": 0.0,
 }
 
@@ -87,7 +87,7 @@ Cross-reference: BOL #74808 (shipment date: 2 days ago)
 and hazard detection agent for the Stater Bros. Distribution Center,
 San Bernardino, CA.
 
-You run on meta/llama-3.1-8b-instruct via NVIDIA NIM microservices.
+You run on nvidia/nemotron-3.5-lightning-30b-a3b via NVIDIA NIM microservices.
 
 You enforce:
 - FDA FSMA (Food Safety Modernization Act) — 21 CFR Part 117

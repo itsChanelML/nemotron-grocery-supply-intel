@@ -61,7 +61,7 @@ async def trigger_action(body: ActionRequest):
                     "label": "Equipment Agent Reasoning",
                     "detail": trigger.get("agent_response", "")[:180] + "…",
                     "icon": "🧠",
-                    "model": "nvidia/llama-3.1-nemotron-70b-instruct via NIM",
+                    "model": "nvidia/nemotron-3-super-120b-a12b via NIM",
                 },
                 "action": {
                     "label": "Maintenance Dispatch Sent",
@@ -124,7 +124,7 @@ async def trigger_action(body: ActionRequest):
                     "label": "Safety Agent Reasoning",
                     "detail": trigger.get("agent_response", "")[:180] + "…",
                     "icon": "🧠",
-                    "model": "meta/llama-3.1-8b-instruct via NIM",
+                    "model": "nvidia/nemotron-3.5-lightning-30b-a3b via NIM",
                 },
                 "action": {
                     "label": "WMS Quarantine Record Written",
@@ -194,7 +194,7 @@ async def trigger_action(body: ActionRequest):
                     "label": "Forecasting Agent Reasoning",
                     "detail": trigger.get("agent_response", "")[:180] + "…",
                     "icon": "🧠",
-                    "model": "nvidia/llama-3.1-nemotron-70b-instruct via NIM",
+                    "model": "nvidia/nemotron-3-super-120b-a12b via NIM",
                 },
                 "action": {
                     "label": "POS Price Update Applied",

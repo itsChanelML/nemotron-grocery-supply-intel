@@ -83,7 +83,7 @@ Formal LangGraph / MCP integration is on the roadmap; the current routing is pla
 ║   │ FORECASTING │ │  EQUIPMENT  │ │  SAFETY   │ │   DOCUMENT   │      ║
 ║   │    AGENT    │ │    AGENT    │ │   AGENT   │ │    AGENT     │      ║
 ║   │─────────────│ │─────────────│ │───────────│ │──────────────│      ║
-║   │Nemotron 70B │ │Nemotron 70B │ │ Llama 8B  │ │Nemotron 70B  │      ║
+║   │Nemotron 3 Super 120B │ │Nemotron 3 Super 120B │ │ Nemotron 3.5 Lightning 30B  │ │Nemotron 3 Super 120B  │      ║
 ║   │  via NIM    │ │  via NIM    │ │  via NIM  │ │+ nv-embedqa  │      ║
 ║   │─────────────│ │─────────────│ │───────────│ │  via NIM     │      ║
 ║   │• Spoilage   │ │• Cold chain │ │• FDA FSMA │ │• BOL parsing │      ║
@@ -125,7 +125,7 @@ live feed badge, and full loop trace modal for every action fired.
 ```
 LOOP 1 — Equipment Agent → Google Chat Maintenance Dispatch   [IMPLEMENTED]
   R-12 compressor sensor: cycle time +17% above baseline
-    → Equipment Agent detects anomaly (Nemotron 70B via NIM)
+    → Equipment Agent detects anomaly (Nemotron 3 Super 120B via NIM)
     → api/chat.py detects CRITICAL keyword trigger
     → api/gchat.py POSTs rich card to Google Chat space
     → Maintenance supervisor receives real message on their phone
@@ -134,7 +134,7 @@ LOOP 1 — Equipment Agent → Google Chat Maintenance Dispatch   [IMPLEMENTED]
 
 LOOP 2 — Safety Agent → WMS Quarantine Record               [IMPLEMENTED]
   FDA OpenFDA API → Class II recall: romaine lettuce lot #RLT-2024-0891
-    → Safety Agent matches against BOL #74808 in BigQuery (Llama 8B via NIM)
+    → Safety Agent matches against BOL #74808 in BigQuery (Nemotron 3.5 Lightning 30B via NIM)
     → api/actions.py writes quarantine record to the in-memory action log (BigQuery write = production step)
     → 340 units status updated to QUARANTINED in WMS
     → UI: feed flashes "⚡ QUARANTINED" + loop trace modal
@@ -142,7 +142,7 @@ LOOP 2 — Safety Agent → WMS Quarantine Record               [IMPLEMENTED]
 
 LOOP 3 — Forecasting Agent → POS Markdown Applied           [IMPLEMENTED]
   Atlantic salmon: spoilage score 0.87 · 2.1 days to expiry · 340 units
-    → Forecasting Agent recommends 30% markdown (Nemotron 70B via NIM)
+    → Forecasting Agent recommends 30% markdown (Nemotron 3 Super 120B via NIM)
     → api/actions.py writes markdown record: $12.99 → $9.09
     → $3,091 revenue recovered from $4,416 at risk
     → UI: feed flashes "⚡ MARKDOWN APPLIED" + loop trace modal
@@ -157,10 +157,10 @@ LOOP 3 — Forecasting Agent → POS Markdown Applied           [IMPLEMENTED]
 
 | Agent | Model | Temp | Why This Model |
 |---|---|---|---|
-| 🟢 **Forecasting** | `nvidia/llama-3.1-nemotron-70b-instruct` | `0.1` | Multi-variable numerical reasoning across velocity, dwell time, and external demand signals. Nemotron's RLHF post-training on Llama 70B significantly outperforms base model on structured forecasting. Low temp = deterministic recommendations. |
-| 🔵 **Equipment** | `nvidia/llama-3.1-nemotron-70b-instruct` | `0.1` | Root cause analysis on correlated sensor streams requires holding multiple failure hypotheses simultaneously. 70B handles this reliably — 8B drops correlations under load. |
-| 🟠 **Safety** | `meta/llama-3.1-8b-instruct` | `0.0` | FDA/OSHA compliance is rule lookup + threshold comparison against known regulations. 8B is reliable at 4× lower latency and cost. Zero temp = zero ambiguity on safety decisions. |
-| 🟣 **Document** | `nvidia/nv-embedqa-e5-v5` + `nvidia/llama-3.1-nemotron-70b-instruct` | `0.1` | Two-model Hybrid RAG: nv-embedqa vectors → BigQuery vector search → top-k chunks → Nemotron grounded generation. Mirrors NeMo Retriever architecture exactly. |
+| 🟢 **Forecasting** | `nvidia/nemotron-3-super-120b-a12b` | `0.1` | Multi-variable numerical reasoning across velocity, dwell time, and external demand signals. Large Nemotron model, strong on structured forecasting. Low temp = deterministic recommendations. |
+| 🔵 **Equipment** | `nvidia/nemotron-3-super-120b-a12b` | `0.1` | Root cause analysis on correlated sensor streams requires holding multiple failure hypotheses simultaneously. 120B handles this reliably — small models drop correlations under load. |
+| 🟠 **Safety** | `nvidia/nemotron-3.5-lightning-30b-a3b` | `0.0` | FDA/OSHA compliance is rule lookup + threshold comparison against known regulations. The 30B fast model is reliable at much lower latency and cost. Zero temp = zero ambiguity on safety decisions. |
+| 🟣 **Document** | `nvidia/nemotron-3-embed-1b` + `nvidia/nemotron-3-super-120b-a12b` | `0.1` | Two-model Hybrid RAG: nv-embedqa vectors → BigQuery vector search → top-k chunks → Nemotron grounded generation. Mirrors NeMo Retriever architecture exactly. |
 | ⚪ **Orchestrator** | `gemini-2.5-pro` via Vertex AI | `0.2` | 2M token context for synthesizing heterogeneous signals across all 4 agents. Entire stack stays NVIDIA + Google Cloud — zero third-party inference dependencies. |
 
 ---
@@ -215,10 +215,10 @@ orchaid/                              ← repo root
     ├── .env.example
     │
     ├── agents/                       ← one file per agent
-    │   ├── forecasting.py            ← Nemotron 70B · temp 0.1 · Loop 3 trigger
-    │   ├── equipment.py              ← Nemotron 70B · temp 0.1 · Loop 1 trigger
-    │   ├── safety.py                 ← Llama 8B · temp 0.0 · Loop 2 trigger
-    │   └── document.py               ← Nemotron 70B + nv-embedqa · Hybrid RAG
+    │   ├── forecasting.py            ← Nemotron 3 Super 120B · temp 0.1 · Loop 3 trigger
+    │   ├── equipment.py              ← Nemotron 3 Super 120B · temp 0.1 · Loop 1 trigger
+    │   ├── safety.py                 ← Nemotron 3.5 Lightning 30B · temp 0.0 · Loop 2 trigger
+    │   └── document.py               ← Nemotron 3 Super 120B + nv-embedqa · Hybrid RAG
     │
     ├── lib/                          ← shared clients
     │   ├── nim.py                    ← NVIDIA NIM (OpenAI-compatible SDK)
@@ -288,7 +288,7 @@ the only key you need is an NVIDIA NIM key.
 1. **Backend project** — [vercel.com/new](https://vercel.com/new) → import this repo →
    **Root Directory: `backend`** (`backend/vercel.json` handles the rest).
    Environment variables: `NVIDIA_NIM_API_KEY` (required), optionally `GOOGLE_CHAT_WEBHOOK_URL`.
-   Leave `GCP_PROJECT_ID` unset — the orchestrator falls back to Nemotron 70B.
+   Leave `GCP_PROJECT_ID` unset — the orchestrator falls back to Nemotron 3 Super 120B.
 2. **Frontend project** — import the repo again → **Root Directory: `frontend`**.
    Environment variable: `NEXT_PUBLIC_API_URL` = the backend project's URL
    (no trailing slash). Redeploy after setting it — it is baked in at build time.
@@ -298,7 +298,7 @@ The lean `requirements.txt` is what Vercel installs. For the full GCP stack (Gem
 orchestrator, BigQuery) use `pip install -r requirements-gcp.txt` locally or on Cloud Run.
 
 Note: serverless functions have execution time limits (10s on Hobby by default) — if a
-70B response times out, retry or upgrade the plan.
+120B response times out, retry or upgrade the plan.
 
 ### Full stack: Backend → Google Cloud Run
 

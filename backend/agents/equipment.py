@@ -2,26 +2,26 @@ from typing import Optional
 # backend/agents/equipment.py
 # Equipment Agent — Cold Chain & Asset Health
 #
-# Model: nvidia/llama-3.1-nemotron-70b-instruct via NIM
+# Model: nvidia/nemotron-3-super-120b-a12b via NIM
 # Temperature: 0.1 (low — equipment diagnosis needs consistency)
 # Physical AI Loop: Loop 1 → Google Chat maintenance dispatch
 #
-# Why Nemotron 70B:
+# Why Nemotron 3 Super 120B:
 #   Root cause analysis on correlated sensor streams (compressor cycle,
 #   door seal integrity, AMR odometry drift) requires holding multiple
-#   failure hypotheses simultaneously. The 70B model handles multi-signal
-#   correlation reliably — the 8B model drops correlations under load.
+#   failure hypotheses simultaneously. The 120B model handles multi-signal
+#   correlation reliably — the 30B model drops correlations under load.
 #   A missed cold chain failure triggers FDA 21 CFR 117 reporting
 #   within 4 hours, so accuracy is non-negotiable.
 
-from lib.nim import NEMOTRON_70B
+from lib.nim import NEMOTRON_LARGE
 
 
 EQUIPMENT_AGENT = {
     "id": "equipment",
     "name": "Equipment Agent",
     "role": "Cold Chain & Asset Health",
-    "model": NEMOTRON_70B,
+    "model": NEMOTRON_LARGE,
     "temperature": 0.1,
 }
 
@@ -69,7 +69,7 @@ Dock Doors:
 health monitor for refrigeration units, conveyor systems, and AMR fleets at
 the Stater Bros. Distribution Center, San Bernardino, CA.
 
-You run on nvidia/llama-3.1-nemotron-70b-instruct via NVIDIA NIM microservices.
+You run on nvidia/nemotron-3-super-120b-a12b via NVIDIA NIM microservices.
 
 Cold chain compliance is existential at this facility:
 - A refrigeration failure triggers mandatory FDA 21 CFR 117 reporting within 4 hours

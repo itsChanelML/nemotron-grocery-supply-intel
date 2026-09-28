@@ -5,12 +5,12 @@
 # pointed at NVIDIA's inference endpoint.
 #
 # Model routing rationale:
-#   Nemotron 70B — Forecasting, Equipment, Document agents
-#     Meta Llama 3.1 70B base + NVIDIA RLHF post-training for instruction
-#     following. Significantly outperforms base Llama on multi-step
-#     numerical reasoning and root cause analysis tasks.
+#   Nemotron 3 Super 120B — Forecasting, Equipment, Document agents
+#     NVIDIA Nemotron 3 Super (120B MoE) — strong instruction
+#     following, multi-step numerical reasoning and
+#     root cause analysis.
 #
-#   Llama 8B — Safety agent
+#   Nemotron 3.5 Lightning 30B — Safety agent
 #     Rule lookup + threshold comparison against known regulations.
 #     Reliable at 4x lower latency and cost. Zero temp for determinism.
 #
@@ -25,9 +25,9 @@ NIM_BASE_URL = os.getenv("NVIDIA_NIM_BASE_URL", "https://integrate.api.nvidia.co
 NIM_API_KEY  = os.getenv("NVIDIA_NIM_API_KEY", "")
 
 # Model constants
-NEMOTRON_70B = "nvidia/llama-3.1-nemotron-70b-instruct"
-LLAMA_8B     = "meta/llama-3.1-8b-instruct"
-NV_EMBED     = "nvidia/nv-embedqa-e5-v5"
+NEMOTRON_LARGE = "nvidia/nemotron-3-super-120b-a12b"
+NEMOTRON_FAST  = "nvidia/nemotron-3.5-lightning-30b-a3b"
+NV_EMBED       = "nvidia/nemotron-3-embed-1b"
 
 
 def _require_key() -> str:
@@ -68,14 +68,25 @@ async def nim_chat(
 
     formatted = [{"role": "system", "content": system_prompt}] + messages
 
-    response = await client.chat.completions.create(
-        model=model,
-        messages=formatted,
-        temperature=temperature,
-        max_tokens=max_tokens,
-    )
-
-    return response.choices[0].message.content or ""
+    # Try the requested model, then fall back to the fast model if it is
+    # overloaded or unavailable (NIM catalog models are retired periodically).
+    candidates = [model] if model == NEMOTRON_FAST else [model, NEMOTRON_FAST]
+    last_err: Exception | None = None
+    for m in candidates:
+        try:
+            response = await client.chat.completions.create(
+                model=m,
+                messages=formatted,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                # Reasoning models: skip the chain-of-thought, return only the answer
+                extra_body={"chat_template_kwargs": {"enable_thinking": False}},
+            )
+            return response.choices[0].message.content or ""
+        except Exception as e:  # noqa: BLE001
+            last_err = e
+            print(f"NIM call failed for {m}: {e}")
+    raise last_err
 
 
 async def nim_embed(texts: list[str]) -> list[list[float]]:

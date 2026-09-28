@@ -3,16 +3,16 @@ from typing import Optional
 # Document Agent — BOL & Invoice RAG Intelligence
 #
 # Models:
-#   nvidia/nv-embedqa-e5-v5 — embedding (NeMo Retriever pattern)
-#   nvidia/llama-3.1-nemotron-70b-instruct — grounded generation
+#   nvidia/nemotron-3-embed-1b — embedding (NeMo Retriever pattern)
+#   nvidia/nemotron-3-super-120b-a12b — grounded generation
 # Temperature: 0.1
 #
 # Why two models:
 #   1. nv-embedqa converts BOL/invoice text chunks into dense vectors.
 #      At query time, the query is embedded with the same model and
 #      we find the nearest document chunks (semantic search).
-#   2. Nemotron 70B takes retrieved chunks + query and generates a
-#      grounded answer. The 70B is required here because document
+#   2. Nemotron 3 Super 120B takes retrieved chunks + query and generates a
+#      grounded answer. The 120B model is required here because document
 #      intelligence involves cross-referencing multiple records
 #      (BOL qty vs invoice qty vs PO lot number) — smaller models
 #      hallucinate on multi-document reasoning tasks.
@@ -20,14 +20,14 @@ from typing import Optional
 # Pipeline: PDF → Cloud Storage → Document AI → nv-embedqa → BigQuery
 #           → vector search → top-k chunks → Nemotron generation
 
-from lib.nim import NEMOTRON_70B, NV_EMBED
+from lib.nim import NEMOTRON_LARGE, NV_EMBED
 
 
 DOCUMENT_AGENT = {
     "id": "document",
     "name": "Document Agent",
     "role": "BOL & Invoice RAG Intelligence",
-    "model": NEMOTRON_70B,
+    "model": NEMOTRON_LARGE,
     "embedding_model": NV_EMBED,
     "temperature": 0.1,
 }
@@ -74,15 +74,15 @@ Vendor SLA breach: Chobani on-time delivery 78% vs 85% SLA (30-day avg)
 document intelligence agent for the Stater Bros. Distribution Center,
 San Bernardino, CA.
 
-You run on nvidia/llama-3.1-nemotron-70b-instruct via NVIDIA NIM microservices,
-with nvidia/nv-embedqa-e5-v5 for semantic vector search.
+You run on nvidia/nemotron-3-super-120b-a12b via NVIDIA NIM microservices,
+with nvidia/nemotron-3-embed-1b for semantic vector search.
 
 You use a Hybrid RAG pipeline built on the NeMo Retriever pattern:
 - Google Cloud Document AI extracts structured data from BOL/invoice PDFs
 - Google Cloud Storage archives raw documents
 - NVIDIA NV-EmbedQA generates dense vectors
 - BigQuery stores and searches the vector index
-- Nemotron 70B generates grounded answers from retrieved chunks
+- Nemotron 3 Super 120B generates grounded answers from retrieved chunks
 
 You ONLY answer based on what has been retrieved from the vector index.
 If a document is not in the corpus, say so explicitly — never hallucinate.

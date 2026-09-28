@@ -52,7 +52,7 @@ async def root():
         "service": "Orchaid API",
         "version": "1.0.0",
         "stack": {
-            "agents": "NVIDIA NIM (Nemotron 70B + Llama 8B)",
+            "agents": "NVIDIA NIM (Nemotron 3 Super 120B + Nemotron 3.5 Lightning 30B)",
             "orchestrator": "Gemini 2.5 Pro via Vertex AI",
             "data": "Google Cloud BigQuery",
             "documents": "Google Cloud Document AI",
