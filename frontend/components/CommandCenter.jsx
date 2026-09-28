@@ -383,7 +383,7 @@ export default function CommandCenter() {
                 <span style={{ fontSize:15, color:"rgba(255,255,255,0.5)" }}>◉</span>
                 <div>
                   <div style={{ fontSize:9, color:"rgba(255,255,255,0.65)", letterSpacing:"0.08em" }}>ORCHESTRATOR</div>
-                  <div style={{ fontSize:7, color:"rgba(255,255,255,0.28)", marginTop:2 }}>LangGraph · MCP · All agents</div>
+                  <div style={{ fontSize:7, color:"rgba(255,255,255,0.28)", marginTop:2 }}>Gemini · All agents</div>
                 </div>
               </button>
 
@@ -475,7 +475,7 @@ export default function CommandCenter() {
                 <div style={{ fontSize:8, color:"rgba(255,255,255,0.3)", marginTop:2 }}>
                   {agent
                     ? `NIM: ${agent.id === "safety" ? "meta/llama-3.1-8b-instruct" : "nvidia/llama-3.1-nemotron-70b-instruct"}`
-                    : "Gemini 2.5 Pro · Vertex AI · Coordinating 4 NIM agents via LangGraph + MCP"}
+                    : "Gemini 2.5 Pro · Vertex AI · Coordinating 4 NIM agents"}
                 </div>
               </div>
               <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:6 }}>

@@ -52,12 +52,12 @@ Management Systems (WMS) and ERPs — forming a coordination layer between:
 - **OT (Operational Technology)** — refrigeration sensors, AMR robots, conveyor belts, dock doors
 
 Orchaid implements this blueprint for the fresh grocery supply chain using **NVIDIA NIM
-microservices** for agent inference, **LangGraph** for orchestration, and **MCP (Model
-Context Protocol)** for inter-agent communication.
+microservices** for agent inference, a **LangGraph-style** routing pattern (agent registry + trigger-based action layer) for orchestration.
+Formal LangGraph / MCP integration is on the roadmap; the current routing is plain Python in `backend/api/chat.py`.
 
 ---
 
-## 🏗️ LangGraph Orchestration Architecture
+## 🏗️ Orchestration Architecture
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════╗
@@ -71,14 +71,14 @@ Context Protocol)** for inter-agent communication.
 ║                                                                          ║
 ║   POST /chat · POST /actions · POST /gchat · GET /fda · GET /telemetry   ║
 ║                                                                          ║
-║              LANGGRAPH ORCHESTRATION LAYER  ·  MCP Protocol              ║
+║              AGENT ORCHESTRATION LAYER  ·  api/chat.py                 ║
 ║                                                                          ║
 ║   ┌──────────────────────────────────────────────────────────────────┐  ║
 ║   │                  GEMINI 2.5 PRO ORCHESTRATOR                      │  ║
 ║   │                    Google Cloud Vertex AI                         │  ║
 ║   │       2M token context · Multi-agent synthesis · IT/OT bridge     │  ║
 ║   └──────┬───────────────┬──────────────┬──────────────┬─────────────┘  ║
-║          │  MCP          │  MCP         │  MCP         │  MCP           ║
+║          │               │              │              │                ║
 ║   ┌──────▼──────┐ ┌──────▼──────┐ ┌────▼──────┐ ┌─────▼────────┐      ║
 ║   │ FORECASTING │ │  EQUIPMENT  │ │  SAFETY   │ │   DOCUMENT   │      ║
 ║   │    AGENT    │ │    AGENT    │ │   AGENT   │ │    AGENT     │      ║
@@ -135,7 +135,7 @@ LOOP 1 — Equipment Agent → Google Chat Maintenance Dispatch   [IMPLEMENTED]
 LOOP 2 — Safety Agent → WMS Quarantine Record               [IMPLEMENTED]
   FDA OpenFDA API → Class II recall: romaine lettuce lot #RLT-2024-0891
     → Safety Agent matches against BOL #74808 in BigQuery (Llama 8B via NIM)
-    → api/actions.py writes quarantine record to action log / BigQuery
+    → api/actions.py writes quarantine record to the in-memory action log (BigQuery write = production step)
     → 340 units status updated to QUARANTINED in WMS
     → UI: feed flashes "⚡ QUARANTINED" + loop trace modal
     → Closes the IT (federal database) → OT (physical dock) gap in real time
@@ -185,7 +185,7 @@ LOOP 3 — Forecasting Agent → POS Markdown Applied           [IMPLEMENTED]
 | **Physical AI** | 3 fully closed IT→OT loops with real actions: Google Chat dispatch, WMS quarantine, POS markdown |
 | **NIM Microservices** | Each agent calls a discrete NIM endpoint with model-specific config and temperature |
 | **NeMo Retriever / Hybrid RAG** | Document Agent: nv-embedqa vectors → BigQuery search → Nemotron grounded generation |
-| **LangGraph + MCP** | Multi-agent orchestration and inter-agent communication pattern |
+| **Orchestration** | Agent registry + trigger-based routing (LangGraph / MCP planned) |
 | **IT/OT Bridge** | FDA OpenFDA (federal IT) → physical dock quarantine action (warehouse OT) |
 | **cuML Anomaly Scoring** | Equipment sensor anomaly scoring — BigQuery-grounded, scored per reading |
 
@@ -249,6 +249,7 @@ orchaid/                              ← repo root
 
 ```bash
 cd backend
+# Python 3.10+ recommended
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -331,9 +332,10 @@ cd frontend
 
 ```bash
 gcloud auth application-default login
-bq mk --dataset nemo-grocery-supply-intel:orchaid_warehouse
+cd backend
+bq mk --dataset YOUR_PROJECT_ID:orchaid_warehouse
 bq query --use_legacy_sql=false < data/schema/bigquery_schema.sql
-python3 data/synthetic/generate_telemetry.py --bigquery
+python3 data/synthetic/generate_telemetry.py --bigquery   # run from backend/
 ```
 
 ---
@@ -353,9 +355,9 @@ Ask each agent these questions to trigger all 3 Physical AI loops:
 
 <div align="center">
 
-Built by **[Chanel Power](https://www.linkedin.com/in/chanelpower)**
-Senior ML Engineer · Apple · Founder, Mentor Me Collective
-Forbes U30 Community · Google Certified Generative AI Leader
+Built by **[Chanel Power](https://www.linkedin.com/in/powerc1)**
+Senior ML Engineer · Founder, Mentor Me Collective
+Forbes U30 Community · NVIDIA Certified Builder · Google Certified Generative AI Leader
 
 `nemotron-grocery-supply-intel` · Orchaid v1.0 · 2026
 

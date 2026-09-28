@@ -1,7 +1,7 @@
 // app/layout.jsx
 export const metadata = {
   title: "Orchaid — Grocery Supply Chain Intelligence",
-  description: "Multi-Agent Intelligent Warehouse prototype for grocery distribution. Built on NVIDIA NIM, LangGraph, Google Cloud, and FDA OpenData.",
+  description: "Multi-Agent Intelligent Warehouse prototype for grocery distribution. Built on NVIDIA NIM, Gemini, Google Cloud, and FDA OpenData.",
 };
 
 export default function RootLayout({ children }) {

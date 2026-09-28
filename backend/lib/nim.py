@@ -18,7 +18,7 @@
 #     NeMo Retriever pattern: embed → BigQuery vector search → Nemotron gen
 
 import os
-from openai import OpenAI
+from openai import AsyncOpenAI, OpenAI
 from typing import Optional
 
 NIM_BASE_URL = os.getenv("NVIDIA_NIM_BASE_URL", "https://integrate.api.nvidia.com/v1")
@@ -30,14 +30,18 @@ LLAMA_8B     = "meta/llama-3.1-8b-instruct"
 NV_EMBED     = "nvidia/nv-embedqa-e5-v5"
 
 
-def get_nim_client() -> OpenAI:
-    """Return an OpenAI client pointed at the NVIDIA NIM endpoint."""
+def _require_key() -> str:
     if not NIM_API_KEY:
         raise ValueError(
             "NVIDIA_NIM_API_KEY is not set. "
             "Get your key at https://build.nvidia.com"
         )
-    return OpenAI(base_url=NIM_BASE_URL, api_key=NIM_API_KEY)
+    return NIM_API_KEY
+
+
+def get_nim_client() -> OpenAI:
+    """Return a sync OpenAI client pointed at the NVIDIA NIM endpoint."""
+    return OpenAI(base_url=NIM_BASE_URL, api_key=_require_key())
 
 
 async def nim_chat(
@@ -60,11 +64,11 @@ async def nim_chat(
     Returns:
         Generated text response
     """
-    client = get_nim_client()
+    client = AsyncOpenAI(base_url=NIM_BASE_URL, api_key=_require_key())
 
     formatted = [{"role": "system", "content": system_prompt}] + messages
 
-    response = client.chat.completions.create(
+    response = await client.chat.completions.create(
         model=model,
         messages=formatted,
         temperature=temperature,

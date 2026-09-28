@@ -70,7 +70,3 @@ async def get_telemetry(
 
     return payload
 
-
-@router.get("")
-async def get_telemetry_cached(type: str = "all"):
-    return await get_telemetry(type=type)
