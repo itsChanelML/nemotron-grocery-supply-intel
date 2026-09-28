@@ -70,13 +70,13 @@ def build_equipment_card(payload: dict) -> dict:
                                     {
                                         "textButton": {
                                             "text": "✅ ACKNOWLEDGE",
-                                            "onClick": {"openLink": {"url": "https://orchaid.vercel.app"}},
+                                            "onClick": {"openLink": {"url": "https://nemotron-grocery-supply-intel.vercel.app"}},
                                         }
                                     },
                                     {
                                         "textButton": {
                                             "text": "📋 VIEW COMMAND CENTER",
-                                            "onClick": {"openLink": {"url": "https://orchaid.vercel.app"}},
+                                            "onClick": {"openLink": {"url": "https://nemotron-grocery-supply-intel.vercel.app"}},
                                         }
                                     },
                                 ]

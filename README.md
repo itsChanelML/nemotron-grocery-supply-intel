@@ -5,7 +5,7 @@
 
 **Built on the NVIDIA MAIW Blueprint · Physical AI in Production**
 
-[![Live Demo](https://img.shields.io/badge/▶%20LIVE%20DEMO-Command%20Center-00d4aa?style=for-the-badge&logoColor=white)](https://orchaid.vercel.app)
+[![Live Demo](https://img.shields.io/badge/▶%20LIVE%20DEMO-Command%20Center-00d4aa?style=for-the-badge&logoColor=white)](https://nemotron-grocery-supply-intel.vercel.app)
 [![NVIDIA NIM](https://img.shields.io/badge/NVIDIA-NIM%20Microservices-76b900?style=for-the-badge&logo=nvidia&logoColor=white)](https://build.nvidia.com)
 [![Gemini](https://img.shields.io/badge/Google-Gemini%202.5%20Pro-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://cloud.google.com/vertex-ai)
 [![FastAPI](https://img.shields.io/badge/Backend-Python%20FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
@@ -32,7 +32,7 @@
 
 <div align="center">
 
-### → [orchaid.vercel.app](https://orchaid.vercel.app)
+### → [nemotron-grocery-supply-intel.vercel.app](https://nemotron-grocery-supply-intel.vercel.app)
 
 *Open on your phone. Select an agent. Ask a question.*
 *Watch Physical AI reason about cold chain, spoilage, and FDA recalls in real time.*
@@ -385,6 +385,6 @@ NVIDIA Certified Builder · Google Certified Generative AI Leader
 
 *A direct implementation of the NVIDIA MAIW Blueprint for Physical AI in grocery supply chain*
 
-[![Open Command Center](https://img.shields.io/badge/▶%20Open%20Command%20Center-Live%20on%20Vercel-00d4aa?style=for-the-badge)](https://orchaid.vercel.app)
+[![Open Command Center](https://img.shields.io/badge/▶%20Open%20Command%20Center-Live%20on%20Vercel-00d4aa?style=for-the-badge)](https://nemotron-grocery-supply-intel.vercel.app)
 
 </div>
