@@ -24,7 +24,7 @@ class ActionRequest(BaseModel):
 
 
 @router.post("")
-async def trigger_action(body: ActionRequest, request: Request):
+async def trigger_action(body: ActionRequest):
     loop    = body.loop
     trigger = body.trigger
     now     = datetime.now(timezone.utc).isoformat()
@@ -39,13 +39,10 @@ async def trigger_action(body: ActionRequest, request: Request):
         # Fire Google Chat webhook
         gchat_result = {"success": False, "demo": True}
         try:
-            base_url = str(request.base_url).rstrip("/")
-            async with httpx.AsyncClient(timeout=8.0) as client:
-                r = await client.post(f"{base_url}/gchat", json={
-                    "type": "equipment_critical",
-                    "payload": data,
-                })
-                gchat_result = r.json()
+            from api.gchat import GChatRequest, send_gchat_alert
+            gchat_result = await send_gchat_alert(
+                GChatRequest(type="equipment_critical", payload=data)
+            )
         except Exception as e:
             gchat_result = {"success": False, "error": str(e)}
 

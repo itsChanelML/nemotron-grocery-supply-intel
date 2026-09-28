@@ -14,10 +14,10 @@ from typing import Optional
 #   Automatically calls /actions to close the IT/OT loop
 
 import os
-import httpx
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
+from api.actions import ActionRequest, trigger_action
 from lib.nim import nim_chat
 from lib.gemini import gemini_chat
 from agents import (
@@ -90,10 +90,18 @@ async def chat(body: ChatRequest, request: Request):
                 system_prompt=ORCHESTRATOR_SYSTEM,
                 messages=messages,
             )
+        elif HAS_NIM_KEY:
+            # No GCP configured: Nemotron 70B stands in as orchestrator
+            response_text = await nim_chat(
+                model="nvidia/llama-3.1-nemotron-70b-instruct",
+                system_prompt=ORCHESTRATOR_SYSTEM,
+                messages=messages,
+                temperature=0.2,
+            )
         else:
             response_text = (
-                "⚙️ Orchestrator offline — add GCP_PROJECT_ID to environment "
-                "variables to enable Gemini 2.5 Pro orchestration."
+                "⚙️ Orchestrator offline — add NVIDIA_NIM_API_KEY (or GCP_PROJECT_ID "
+                "for Gemini 2.5 Pro) to environment variables."
             )
 
     # ── Specialized agents — NVIDIA NIM ──────────────────────────────────
@@ -135,75 +143,73 @@ async def chat(body: ChatRequest, request: Request):
     physical_action = None
     if agent_id and response_text:
         lower = response_text.lower()
-        base_url = str(request.base_url).rstrip("/")
 
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
 
-                # Loop 1 — Equipment → Google Chat dispatch
-                if agent_id == "equipment" and any(t in lower for t in DISPATCH_TRIGGERS):
-                    r = await client.post(f"{base_url}/actions", json={
-                        "loop": "equipment_dispatch",
-                        "trigger": {
-                            "agent_id": agent_id,
-                            "agent_response": response_text,
-                            "data": {
-                                "asset": "R-12",
-                                "metric": "Compressor cycle time",
-                                "value": "340ms",
-                                "baseline": "290ms",
-                                "zone": "Dairy Zone",
-                                "recommendation": "Dispatch maintenance technician immediately. Inspect compressor valve and capacitor.",
-                            },
+            # Loop 1 — Equipment → Google Chat dispatch
+            if agent_id == "equipment" and any(t in lower for t in DISPATCH_TRIGGERS):
+                r = await trigger_action(ActionRequest(**{
+                    "loop": "equipment_dispatch",
+                    "trigger": {
+                        "agent_id": agent_id,
+                        "agent_response": response_text,
+                        "data": {
+                            "asset": "R-12",
+                            "metric": "Compressor cycle time",
+                            "value": "340ms",
+                            "baseline": "290ms",
+                            "zone": "Dairy Zone",
+                            "recommendation": "Dispatch maintenance technician immediately. Inspect compressor valve and capacitor.",
                         },
-                    })
-                    physical_action = r.json()
+                    },
+                }))
+                physical_action = r
 
-                # Loop 2 — Safety → WMS quarantine
-                elif agent_id == "safety" and any(t in lower for t in QUARANTINE_TRIGGERS):
-                    r = await client.post(f"{base_url}/actions", json={
-                        "loop": "wms_quarantine",
+            # Loop 2 — Safety → WMS quarantine
+            elif agent_id == "safety" and any(t in lower for t in QUARANTINE_TRIGGERS):
+                r = await trigger_action(ActionRequest(**{
+                    "loop": "wms_quarantine",
+                    "trigger": {
+                        "agent_id": agent_id,
+                        "agent_response": response_text,
+                        "data": {
+                            "bol_id": "BOL-74808",
+                            "lot_number": "RLT-2024-0891",
+                            "vendor": "Fresh Express",
+                            "product": "Romaine Lettuce (bagged)",
+                            "units": 340,
+                            "location": "Receiving Dock — Bay 3",
+                            "recall_class": "Class II",
+                            "recall_number": "F-2024-0033",
+                        },
+                    },
+                }))
+                physical_action = r
+
+            # Loop 3 — Forecasting → POS markdown
+            elif agent_id == "forecasting" and any(t in lower for t in MARKDOWN_TRIGGERS):
+                if any(w in lower for w in ["%", "price", "discount", "markdown"]):
+                    r = await trigger_action(ActionRequest(**{
+                        "loop": "pos_markdown",
                         "trigger": {
                             "agent_id": agent_id,
                             "agent_response": response_text,
                             "data": {
-                                "bol_id": "BOL-74808",
-                                "lot_number": "RLT-2024-0891",
-                                "vendor": "Fresh Express",
-                                "product": "Romaine Lettuce (bagged)",
+                                "sku_id": "SKU-4821",
+                                "product_name": "Atlantic Salmon Fillets 2lb",
+                                "zone": "Meat & Seafood",
+                                "original_price": 12.99,
+                                "markdown_pct": 30,
+                                "new_price": 9.09,
                                 "units": 340,
-                                "location": "Receiving Dock — Bay 3",
-                                "recall_class": "Class II",
-                                "recall_number": "F-2024-0033",
+                                "spoilage_score": 0.87,
+                                "days_to_expiry": 2,
+                                "revenue_at_risk": 4416.60,
+                                "revenue_recovered": 3091.60,
                             },
                         },
-                    })
-                    physical_action = r.json()
-
-                # Loop 3 — Forecasting → POS markdown
-                elif agent_id == "forecasting" and any(t in lower for t in MARKDOWN_TRIGGERS):
-                    if any(w in lower for w in ["%", "price", "discount", "markdown"]):
-                        r = await client.post(f"{base_url}/actions", json={
-                            "loop": "pos_markdown",
-                            "trigger": {
-                                "agent_id": agent_id,
-                                "agent_response": response_text,
-                                "data": {
-                                    "sku_id": "SKU-4821",
-                                    "product_name": "Atlantic Salmon Fillets 2lb",
-                                    "zone": "Meat & Seafood",
-                                    "original_price": 12.99,
-                                    "markdown_pct": 30,
-                                    "new_price": 9.09,
-                                    "units": 340,
-                                    "spoilage_score": 0.87,
-                                    "days_to_expiry": 2,
-                                    "revenue_at_risk": 4416.60,
-                                    "revenue_recovered": 3091.60,
-                                },
-                            },
-                        })
-                        physical_action = r.json()
+                    }))
+                    physical_action = r
 
         except Exception as e:
             print(f"Physical action trigger failed: {e}")

@@ -1,0 +1,8 @@
+# Orchaid — full stack: core + Google Cloud (Gemini orchestrator, BigQuery, Document AI)
+# Install with: pip install -r requirements-gcp.txt
+-r requirements.txt
+
+google-cloud-bigquery==3.21.0
+google-cloud-documentai==2.24.0
+google-cloud-storage==2.16.0
+vertexai==1.71.1

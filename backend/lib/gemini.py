@@ -16,8 +16,6 @@
 import os
 import json
 from typing import Optional
-import vertexai
-from vertexai.generative_models import GenerativeModel, Content, Part
 
 PROJECT_ID = os.getenv("GCP_PROJECT_ID", "")
 LOCATION   = os.getenv("GCP_LOCATION", "us-central1")
@@ -33,6 +31,7 @@ def _init_vertex():
     global _initialized
     if _initialized:
         return
+    import vertexai  # lazy: GCP deps are optional (see requirements-gcp.txt)
 
     # Cloud Run / Vercel: credentials passed as JSON string env var
     creds_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
@@ -75,6 +74,7 @@ async def gemini_chat(
         )
 
     _init_vertex()
+    from vertexai.generative_models import GenerativeModel, Content, Part
 
     model_name = FALLBACK_MODEL if use_fallback else ORCHESTRATOR_MODEL
     model = GenerativeModel(

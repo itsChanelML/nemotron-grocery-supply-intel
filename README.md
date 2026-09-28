@@ -209,7 +209,9 @@ orchaid/                              ← repo root
 │
 └── backend/                          ← Python FastAPI · deployed on Cloud Run
     ├── main.py                       ← FastAPI app · all routes registered · CORS
-    ├── requirements.txt
+    ├── requirements.txt              ← core deps (Vercel installs this)
+    ├── requirements-gcp.txt          ← + Vertex AI / BigQuery / Document AI
+    ├── vercel.json
     ├── .env.example
     │
     ├── agents/                       ← one file per agent
@@ -252,7 +254,7 @@ cd backend
 # Python 3.10+ recommended
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt        # or requirements-gcp.txt for Gemini/BigQuery
 
 cp .env.example .env
 # Fill in: NVIDIA_NIM_API_KEY, GCP_PROJECT_ID, GOOGLE_APPLICATION_CREDENTIALS
@@ -278,7 +280,27 @@ npm run dev
 
 ## 🌐 Deploy to Production
 
-### Backend → Google Cloud Run
+### Fastest path: everything on Vercel (demo mode, no GCP)
+
+Two Vercel projects from the same repo. Runs on synthetic telemetry + live FDA data;
+the only key you need is an NVIDIA NIM key.
+
+1. **Backend project** — [vercel.com/new](https://vercel.com/new) → import this repo →
+   **Root Directory: `backend`** (`backend/vercel.json` handles the rest).
+   Environment variables: `NVIDIA_NIM_API_KEY` (required), optionally `GOOGLE_CHAT_WEBHOOK_URL`.
+   Leave `GCP_PROJECT_ID` unset — the orchestrator falls back to Nemotron 70B.
+2. **Frontend project** — import the repo again → **Root Directory: `frontend`**.
+   Environment variable: `NEXT_PUBLIC_API_URL` = the backend project's URL
+   (no trailing slash). Redeploy after setting it — it is baked in at build time.
+3. Check `https://<backend>.vercel.app/health` returns `{"status":"ok"}`.
+
+The lean `requirements.txt` is what Vercel installs. For the full GCP stack (Gemini
+orchestrator, BigQuery) use `pip install -r requirements-gcp.txt` locally or on Cloud Run.
+
+Note: serverless functions have execution time limits (10s on Hobby by default) — if a
+70B response times out, retry or upgrade the plan.
+
+### Full stack: Backend → Google Cloud Run
 
 ```bash
 cd backend
