@@ -357,7 +357,7 @@ Ask each agent these questions to trigger all 3 Physical AI loops:
 
 Built by **[Chanel Power](https://www.linkedin.com/in/powerc1)**
 Senior ML Engineer · Founder, Mentor Me Collective
-Forbes U30 Community · NVIDIA Certified Builder · Google Certified Generative AI Leader
+NVIDIA Certified Builder · Google Certified Generative AI Leader
 
 `nemotron-grocery-supply-intel` · Orchaid v1.0 · 2026
 
